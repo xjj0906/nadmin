@@ -1,17 +1,40 @@
-import { Component, OnInit } from '@angular/core';
-import { Http } from '@angular/http'
+import { Component, OnInit, Renderer2, ElementRef } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { TitleService } from '@delon/theme';
+import { VERSION as VERSION_ALAIN } from '@delon/theme';
+import { VERSION as VERSION_ZORRO, NzModalService } from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  template: `<router-outlet></router-outlet>`,
 })
 export class AppComponent implements OnInit {
-  constructor(private _httpService: Http) { }
-  apiValues: string[] = [];
+  constructor(
+    el: ElementRef,
+    renderer: Renderer2,
+    private router: Router,
+    private titleSrv: TitleService,
+    private modalSrv: NzModalService,
+  ) {
+    renderer.setAttribute(
+      el.nativeElement,
+      'ng-alain-version',
+      VERSION_ALAIN.full,
+    );
+    renderer.setAttribute(
+      el.nativeElement,
+      'ng-zorro-version',
+      VERSION_ZORRO.full,
+    );
+  }
+
   ngOnInit() {
-    this._httpService.get('/api/values').subscribe(values => {
-      this.apiValues = values.json() as string[];
-    });
+    this.router.events
+      .pipe(filter(evt => evt instanceof NavigationEnd))
+      .subscribe(() => {
+        this.titleSrv.setTitle();
+        this.modalSrv.closeAll();
+      });
   }
 }
