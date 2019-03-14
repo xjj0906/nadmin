@@ -1,6 +1,13 @@
 import { Injectable, Injector } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpErrorResponse, HttpEvent, HttpResponseBase } from '@angular/common/http';
+import {
+  HttpInterceptor,
+  HttpRequest,
+  HttpHandler,
+  HttpErrorResponse,
+  HttpEvent,
+  HttpResponseBase,
+} from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { mergeMap, catchError } from 'rxjs/operators';
 import { NzMessageService, NzNotificationService } from 'ng-zorro-antd';
@@ -31,7 +38,11 @@ const CODEMESSAGE = {
  */
 @Injectable()
 export class DefaultInterceptor implements HttpInterceptor {
-  constructor(private injector: Injector) { }
+  constructor(private injector: Injector) {}
+
+  serverUrl = environment.SERVER_URL.endsWith('/')
+    ? environment.SERVER_URL.substring(0, environment.SERVER_URL.length - 1)
+    : environment.SERVER_URL;
 
   get msg(): NzMessageService {
     return this.injector.get(NzMessageService);
@@ -45,10 +56,9 @@ export class DefaultInterceptor implements HttpInterceptor {
     if (ev.status >= 200 && ev.status < 300) return;
 
     const errortext = CODEMESSAGE[ev.status] || ev.statusText;
-    this.injector.get(NzNotificationService).error(
-      `请求错误 ${ev.status}: ${ev.url}`,
-      errortext
-    );
+    this.injector
+      .get(NzNotificationService)
+      .error(`请求错误 ${ev.status}: ${ev.url}`, errortext);
   }
 
   private handleData(ev: HttpResponseBase): Observable<any> {
@@ -92,7 +102,10 @@ export class DefaultInterceptor implements HttpInterceptor {
         break;
       default:
         if (ev instanceof HttpErrorResponse) {
-          console.warn('未可知错误，大部分是由于后端不支持CORS或无效配置引起', ev);
+          console.warn(
+            '未可知错误，大部分是由于后端不支持CORS或无效配置引起',
+            ev,
+          );
           return throwError(ev);
         }
         break;
@@ -100,19 +113,25 @@ export class DefaultInterceptor implements HttpInterceptor {
     return of(ev);
   }
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(
+    req: HttpRequest<any>,
+    next: HttpHandler,
+  ): Observable<HttpEvent<any>> {
     // 统一加上服务端前缀
     let url = req.url;
-    if (!url.startsWith('https://') && !url.startsWith('http://') && !url.startsWith('assets')) {
-      url = environment.SERVER_URL + url;
+    if (
+      !url.startsWith('https://') &&
+      !url.startsWith('http://') &&
+      !url.startsWith('assets') // 本地资源
+    ) {
+      url = this.serverUrl + (url.startsWith('/') ? url : '/' + url);
     }
 
     const newReq = req.clone({ url });
     return next.handle(newReq).pipe(
       mergeMap((event: any) => {
         // 允许统一对请求错误处理
-        if (event instanceof HttpResponseBase)
-          return this.handleData(event);
+        if (event instanceof HttpResponseBase) return this.handleData(event);
         // 若一切都正常，则后续操作
         return of(event);
       }),

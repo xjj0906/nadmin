@@ -14,6 +14,8 @@ namespace Nadmin
 {
     public class Startup
     {
+        readonly string AllowSameDomain = "_allowSameDomain";
+
         private readonly IConfiguration _config;
 
         public Startup(IConfiguration config)
@@ -25,7 +27,8 @@ namespace Nadmin
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
+            services.AddCors(options =>
+             options.AddPolicy(AllowSameDomain, builder => builder.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin()));
 
             services.AddMvc();
 
@@ -88,7 +91,7 @@ namespace Nadmin
                 app.UseHttpsRedirection();
             }
 
-            app.UseCors(b => b.AllowAnyOrigin().AllowCredentials().AllowAnyMethod().AllowAnyHeader());
+            app.UseCors(AllowSameDomain);
             //应用身份验证
             app.UseAuthentication();//必须在UseMvc前调用
 
