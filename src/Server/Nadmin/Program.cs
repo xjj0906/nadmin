@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using NLog.Web;
+using System;
 
 namespace Nadmin
 {
@@ -19,6 +15,13 @@ namespace Nadmin
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureLogging(logging => { logging.ClearProviders(); })
+                .UseNLog()
+                .UseKestrel(option =>
+                {
+                    option.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(2);
+                    option.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(2);
+                })
                 .UseStartup<Startup>();
     }
 }

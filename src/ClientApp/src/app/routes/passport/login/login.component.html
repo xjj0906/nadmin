@@ -5,20 +5,20 @@
       <nz-form-item>
         <nz-form-control>
           <nz-input-group nzSize="large" nzPrefixIcon="anticon anticon-user">
-            <input nz-input formControlName="userName" placeholder="username: admin or user">
+            <input nz-input formControlName="userName" placeholder="{{'app.login.username.placeholder' | translate}}">
           </nz-input-group>
           <nz-form-explain *ngIf="userName.dirty && userName.errors">
-            {{ 'Please enter mobile number!' | translate }}
+            {{ 'validation.username.required' | translate }}
           </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
       <nz-form-item>
         <nz-form-control>
           <nz-input-group nzSize="large" nzPrefixIcon="anticon anticon-lock">
-            <input nz-input type="password" formControlName="password" placeholder="password: ng-alain.com">
+            <input nz-input type="password" formControlName="password" placeholder="{{'app.login.password.placeholder' | translate}}">
           </nz-input-group>
           <nz-form-explain *ngIf="password.dirty && password.errors">
-            {{ 'Please enter password!' | translate }}
+            {{ 'validation.password.required' | translate }}
           </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
@@ -64,9 +64,9 @@
     <nz-col [nzSpan]="12">
       <label nz-checkbox formControlName="remember">{{ 'app.login.remember-me' | translate }}</label>
     </nz-col>
-    <nz-col [nzSpan]="12" class="text-right">
+    <!-- <nz-col [nzSpan]="12" class="text-right">
       <a class="forgot" (click)="msg.error('请找欧阳锋')">{{ 'app.login.forgot-password' | translate }}</a>
-    </nz-col>
+    </nz-col> -->
   </nz-form-item>
   <nz-form-item>
     <button nz-button type="submit" nzType="primary" nzSize="large" [nzLoading]="http.loading" nzBlock>
@@ -79,5 +79,5 @@
   <i nz-tooltip="in fact Auth0 via window" (click)="open('auth0', 'window')" nz-icon type="alipay-circle" class="icon"></i>
   <i nz-tooltip="in fact Github via redirect" (click)="open('github')" nz-icon type="taobao-circle" class="icon"></i>
   <i (click)="open('weibo', 'window')" nz-icon type="weibo-circle" class="icon"></i> -->
-  <a class="register" routerLink="/passport/register">{{ 'app.login.signup' | translate }}</a>
+  <!-- <a class="register" routerLink="/passport/register">{{ 'app.login.signup' | translate }}</a> -->
 </div>

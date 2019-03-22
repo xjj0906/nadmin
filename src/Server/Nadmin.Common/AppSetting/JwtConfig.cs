@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Nadmin.Model
+﻿namespace Nadmin.Common.AppSetting
 {
     public class JwtConfig
     {

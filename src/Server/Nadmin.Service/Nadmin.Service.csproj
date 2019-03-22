@@ -5,11 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="sqlSugarCore" Version="4.9.9.2" />
+    <PackageReference Include="sqlSugarCore" Version="4.9.9.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Nadmin.Common\Nadmin.Common.csproj" />
+    <ProjectReference Include="..\Nadmin.IService\Nadmin.IService.csproj" />
+    <ProjectReference Include="..\Nadmin.Model\Nadmin.Model.csproj" />
   </ItemGroup>
 
 </Project>

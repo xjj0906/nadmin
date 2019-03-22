@@ -1,53 +1,54 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Nadmin.Common.AppSetting;
+using Nadmin.Dto;
+using Nadmin.Dto.Model;
+using Nadmin.IService;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using IdentityModel;
-using Microsoft.Extensions.Options;
-using Nadmin.Model;
 
 namespace Nadmin.Controllers
 {
     [AllowAnonymous]
-    [Route("api/[controller]")]
-    public class OAuthController : ControllerBase
+    public class OAuthController : BaseController
     {
-        protected IOptions<JwtConfig> JwtConfig { get; }
+        protected IOptions<AppSettings> AppSetting { get; }
+        protected IUserService UserService { get; }
 
-        public OAuthController(IOptions<JwtConfig> jwtConfig)
+        public OAuthController(IOptions<AppSettings> appSetting, IUserService userService)
         {
-            JwtConfig = jwtConfig;
+            AppSetting = appSetting;
+            UserService = userService;
         }
 
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody]UserDto userDto)
         {
-            //var user = _store.FindUser(userDto.UserName, userDto.Password);
-            var user = new User
+            var user = UserService.GetByUserNamePassword(userDto.UserName, userDto.Password).Result;
+            if (user == null) return Ok(new ResultDto
             {
-                Id = 1,
-                Name = "JJ",
-                Email = "JJ@JJ.com",
-                PhoneNumber = "12345678945",
-            };
-            if (user == null) return Unauthorized();
+                Status = 1,
+                Msg = "用户名或密码错误"
+            });
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(JwtConfig.Value.SecretKey);
+            var key = Encoding.ASCII.GetBytes(AppSetting.Value.JwtConfig.SecretKey);
             var authTime = DateTime.UtcNow;
             var expiresAt = authTime.AddDays(7);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new Claim[]
+                Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(JwtClaimTypes.Audience,"api"),
-                    new Claim(JwtClaimTypes.Issuer,"http://localhost:5200"),
-                    new Claim(JwtClaimTypes.Id, user.Id.ToString()),
-                    new Claim(JwtClaimTypes.Name, user.Name),
-                    new Claim(JwtClaimTypes.Email, user.Email),
-                    new Claim(JwtClaimTypes.PhoneNumber, user.PhoneNumber),
+                    new Claim(JwtClaimTypes.Issuer,"Nadmin"),
+                    new Claim(JwtClaimTypes.Id, user.Id),
+                    new Claim(JwtClaimTypes.Name, user.UserName),
+                    new Claim(JwtClaimTypes.Email, user.Email??""),
+                    new Claim(JwtClaimTypes.PhoneNumber, user.PhoneNumber??""),
                     new Claim(JwtClaimTypes.JwtId, Guid.NewGuid().ToString())
                 }),
                 Expires = expiresAt,
@@ -56,32 +57,21 @@ namespace Nadmin.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
-            return Ok(new
+            return Ok(new ObjectResultDto<dynamic>
             {
-                msg = "ok",
-                access_token = tokenString,
-                token_type = "Bearer",
-                profile = new
+                Result = new
                 {
-                    sid = user.Id,
-                    name = user.Name,
-                    auth_time = new DateTimeOffset(authTime).ToUnixTimeSeconds(),
-                    expires_at = new DateTimeOffset(expiresAt).ToUnixTimeSeconds()
+                    access_token = tokenString,
+                    token_type = "Bearer",
+                    profile = new
+                    {
+                        sid = user.Id,
+                        name = user.UserName,
+                        auth_time = new DateTimeOffset(authTime).ToUnixTimeSeconds(),
+                        expires_at = new DateTimeOffset(expiresAt).ToUnixTimeSeconds()
+                    }
                 }
             });
         }
-    }
-
-    public class UserDto
-    {
-        public string UserName { get; set; }
-        public string Password { get; set; }
-    }
-    public class User
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public string PhoneNumber { get; set; }
     }
 }
