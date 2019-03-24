@@ -54,7 +54,7 @@ export class DefaultInterceptor implements HttpInterceptor {
 
   private checkStatus(ev: HttpResponseBase) {
     if (ev.status >= 200 && ev.status < 300) return;
-
+    if (ev.status === 401) return;
     const errortext = CODEMESSAGE[ev.status] || ev.statusText;
     this.injector
       .get(NzNotificationService)

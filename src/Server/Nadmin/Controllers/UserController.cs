@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Nadmin.Dto;
-using Nadmin.Dto.Model;
 using Nadmin.Dto.Model.User;
 using Nadmin.IService;
+using SqlSugar;
+using System.Collections.Generic;
 using User = Nadmin.Model.Models.User;
 
 namespace Nadmin.Controllers
@@ -16,6 +17,37 @@ namespace Nadmin.Controllers
         public UserController(IUserService userService)
         {
             UserService = userService;
+        }
+
+        [HttpGet]
+        public IActionResult Get(string keyword = "", int pageIndex = 1, int pageSize = 10)
+        {
+            var pageModel = new PageModel
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize
+            };
+
+            var list = UserService.GetPageList(o => o.UserName.Contains(keyword) || o.Email.Contains(keyword)
+                , pageModel, b => b.CreateTime, OrderByType.Desc).Result;
+
+            var dtoList = new List<UserQueryDto>();
+
+            foreach (var user in list)
+            {
+                dtoList.Add(new UserQueryDto
+                {
+                    UserName = user.UserName,
+                    Avatar = user.Avatar,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    Status = user.Status,
+                    Remark = user.Remark,
+                    CreateTime = user.CreateTime,
+                });
+            }
+
+            return Ok(new ArrayResultDto<UserQueryDto>(dtoList.ToArray(), pageModel));
         }
 
         [HttpPost]

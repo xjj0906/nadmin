@@ -15,7 +15,6 @@ namespace Nadmin.Model.Models
             Password = password;
             Status = StatusEnum.Normal;
             CreateTime = DateTime.Now;
-            ModifyTime = DateTime.Now;
         }
 
         /// <summary>
@@ -61,10 +60,5 @@ namespace Nadmin.Model.Models
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
-
-        /// <summary>
-        /// 修改时间
-        /// </summary>
-        public DateTime ModifyTime { get; set; }
     }
 }

@@ -1,24 +1,18 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Nadmin.Model.Enum;
 
 namespace Nadmin.Dto.Model.User
 {
     /// <summary>
-    /// 用户查询 Dto
+    /// 用户 Dto
     /// </summary>
-    public class UserQueryDto
+    public class UserDto
     {
         /// <summary>
         /// 用户名
         /// </summary>
         [Required]
         public string UserName { get; set; }
-
-        /// <summary>
-        /// 头像路径
-        /// </summary>
-        public string Avatar { get; set; }
 
         /// <summary>
         /// 电子邮箱
@@ -40,10 +34,5 @@ namespace Nadmin.Dto.Model.User
         /// 备注
         /// </summary>
         public string Remark { get; set; }
-
-        /// <summary>
-        /// 创建时间
-        /// </summary>
-        public DateTime CreateTime { get; set; }
     }
 }

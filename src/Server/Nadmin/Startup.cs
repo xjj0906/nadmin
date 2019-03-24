@@ -14,6 +14,7 @@ using Nadmin.Common;
 using Nadmin.Common.AppSetting;
 using Nadmin.Filter;
 using Nadmin.Service;
+using Newtonsoft.Json;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using System;
@@ -60,46 +61,55 @@ namespace Nadmin
             services.AddMvc(o =>
             {
                 o.Filters.Add<GlobalExceptionsFilter>();
-            });
+                //o.OutputFormatters.RemoveType<JsonOutputFormatter>();
+                //o.OutputFormatters.Add(new JsonOutputFormatter(new JsonSerializerSettings
+                //{
+                //    ContractResolver = new DefaultContractResolver
+                //    {
+                //        NamingStrategy = new CamelCaseNamingStrategy(),
+                //    },
+                //    NullValueHandling = NullValueHandling.Ignore,
+                //}, ArrayPool<char>.Shared));
+            }).AddJsonOptions(options => { options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore; });
 
             services.Configure<AppSettings>(_config);
 
             AppSettings appSettings = services.BuildServiceProvider().GetService<IOptions<AppSettings>>().Value;
 
             services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(o =>
-            {
-                o.Events = new JwtBearerCustomEvents();
+                    {
+                        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    }).AddJwtBearer(o =>
+                    {
+                        o.Events = new JwtBearerCustomEvents();
 
-                o.TokenValidationParameters = new TokenValidationParameters
-                {
-                    NameClaimType = JwtClaimTypes.Name,
-                    RoleClaimType = JwtClaimTypes.Role,
+                        o.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            NameClaimType = JwtClaimTypes.Name,
+                            RoleClaimType = JwtClaimTypes.Role,
 
-                    ValidIssuer = "Nadmin",
-                    ValidAudience = "api",
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(appSettings.JwtConfig.SecretKey)),
+                            ValidIssuer = "Nadmin",
+                            ValidAudience = "api",
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(appSettings.JwtConfig.SecretKey)),
 
-                    ValidateIssuerSigningKey = true,
-                    /***********************************TokenValidationParameters的参数默认值***********************************/
-                    // RequireSignedTokens = true,
-                    // SaveSigninToken = false,
-                    // ValidateActor = false,
-                    // 将下面两个参数设置为false，可以不验证Issuer和Audience，但是不建议这样做。
-                    // ValidateAudience = true,
-                    // ValidateIssuer = true, 
-                    // ValidateIssuerSigningKey = false,
-                    // 是否要求Token的Claims中必须包含Expires
-                    // RequireExpirationTime = true,
-                    // 允许的服务器时间偏移量
-                    // ClockSkew = TimeSpan.FromSeconds(300),
-                    // 是否验证Token有效期，使用当前时间与Token的Claims中的NotBefore和Expires对比
-                    // ValidateLifetime = true
-                };
-            });
+                            ValidateIssuerSigningKey = true,
+                            /***********************************TokenValidationParameters的参数默认值***********************************/
+                            // RequireSignedTokens = true,
+                            // SaveSigninToken = false,
+                            // ValidateActor = false,
+                            // 将下面两个参数设置为false，可以不验证Issuer和Audience，但是不建议这样做。
+                            // ValidateAudience = true,
+                            // ValidateIssuer = true, 
+                            // ValidateIssuerSigningKey = false,
+                            // 是否要求Token的Claims中必须包含Expires
+                            // RequireExpirationTime = true,
+                            // 允许的服务器时间偏移量
+                            // ClockSkew = TimeSpan.FromSeconds(300),
+                            // 是否验证Token有效期，使用当前时间与Token的Claims中的NotBefore和Expires对比
+                            // ValidateLifetime = true
+                        };
+                    });
 
 
             #region Autofac DI
@@ -109,8 +119,8 @@ namespace Nadmin
             builder.Populate(services);
             var assemblysServices = typeof(BaseService<>).Assembly;//直接采用加载文件的方法
             builder.RegisterAssemblyTypes(assemblysServices)
-                .AsImplementedInterfaces()
-                .InstancePerLifetimeScope();//同一个Lifetime生成的对象是同一个实例
+                            .AsImplementedInterfaces()
+                            .InstancePerLifetimeScope();//同一个Lifetime生成的对象是同一个实例
 
             var container = builder.Build();
             Global.Instance.Init(container);//初始化Global对象
