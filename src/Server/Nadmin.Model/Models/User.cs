@@ -13,42 +13,37 @@ namespace Nadmin.Model.Models
         {
             UserName = userName;
             Password = password;
-            RealName = UserName;
-            Status = 0;
+            Status = StatusEnum.Normal;
             CreateTime = DateTime.Now;
-            UpdateTime = DateTime.Now;
-            LastErrorTime = DateTime.Now;
-            ErrorCount = 0;
+            ModifyTime = DateTime.Now;
         }
 
         /// <summary>
         /// 用户名
         /// </summary>
-        [SugarColumn(Length = 30, IsNullable = true)]
         public string UserName { get; set; }
 
         /// <summary>
         /// 密码
         /// </summary>
-        [SugarColumn(Length = 60, IsNullable = true)]
         public string Password { get; set; }
 
         /// <summary>
-        /// 真实姓名
+        /// 头像路径
         /// </summary>
-        [SugarColumn(Length = 30, IsNullable = true)]
-        public string RealName { get; set; }
+        [SugarColumn(Length = 255, IsNullable = true)]
+        public string Avatar { get; set; }
 
         /// <summary>
         /// 电子邮箱
         /// </summary>
-        [SugarColumn(Length = 30, IsNullable = true)]
+        [SugarColumn(IsNullable = true)]
         public string Email { get; set; }
 
         /// <summary>
         /// 手机号码
         /// </summary>
-        [SugarColumn(Length = 30, IsNullable = true)]
+        [SugarColumn(IsNullable = true)]
         public string PhoneNumber { get; set; }
 
         /// <summary>
@@ -68,18 +63,8 @@ namespace Nadmin.Model.Models
         public DateTime CreateTime { get; set; }
 
         /// <summary>
-        /// 更新时间
+        /// 修改时间
         /// </summary>
-        public DateTime UpdateTime { get; set; }
-
-        /// <summary>
-        ///最后登录时间 
-        /// </summary>
-        public DateTime LastErrorTime { get; set; }
-
-        /// <summary>
-        ///错误次数 
-        /// </summary>
-        public int ErrorCount { get; set; }
+        public DateTime ModifyTime { get; set; }
     }
 }

@@ -2,6 +2,12 @@
 {
     public class ResultDto
     {
+        public ResultDto(int status = 0, string msg = "ok")
+        {
+            Status = status;
+            Msg = msg;
+        }
+
         /// <summary>
         /// 状态(0为正常)
         /// </summary>
@@ -10,6 +16,6 @@
         /// <summary>
         /// 消息
         /// </summary>
-        public string Msg { get; set; } = "ok";
+        public string Msg { get; set; }
     }
 }

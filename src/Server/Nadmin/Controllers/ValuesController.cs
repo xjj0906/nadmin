@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Nadmin.Controllers
 {
-    [Authorize]
     public class ValuesController : BaseController
     {
         // GET api/values

@@ -11,6 +11,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Nadmin.Dto.Model.User;
 
 namespace Nadmin.Controllers
 {
@@ -27,14 +28,13 @@ namespace Nadmin.Controllers
         }
 
         [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody]UserDto userDto)
+        public IActionResult Authenticate([FromBody]UserLoginDto userDto)
         {
-            var user = UserService.GetByUserNamePassword(userDto.UserName, userDto.Password).Result;
-            if (user == null) return Ok(new ResultDto
-            {
-                Status = 1,
-                Msg = "用户名或密码错误"
-            });
+            var encryptPassword = UserService.EncryptPassword(userDto.Password);
+            var user = UserService.GetByUserNamePassword(userDto.UserName, encryptPassword).Result;
+            if (user == null)
+                return Ok(new ResultDto(1, "用户名或密码错误"));
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(AppSetting.Value.JwtConfig.SecretKey);
             var authTime = DateTime.UtcNow;
@@ -57,21 +57,23 @@ namespace Nadmin.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
-            return Ok(new ObjectResultDto<dynamic>
+            return Ok(new ObjectResultDto<dynamic>(new
             {
-                Result = new
+                access_token = tokenString,
+                token_type = "Bearer",
+                profile = new
                 {
-                    access_token = tokenString,
-                    token_type = "Bearer",
-                    profile = new
-                    {
-                        sid = user.Id,
-                        name = user.UserName,
-                        auth_time = new DateTimeOffset(authTime).ToUnixTimeSeconds(),
-                        expires_at = new DateTimeOffset(expiresAt).ToUnixTimeSeconds()
-                    }
+                    sid = user.Id,
+                    name = user.UserName,
+                    auth_time = new DateTimeOffset(authTime).ToUnixTimeSeconds(),
+                    expires_at = new DateTimeOffset(expiresAt).ToUnixTimeSeconds()
                 }
-            });
+            }));
+        }
+
+        public IActionResult Register()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Nadmin.Common;
 using Nadmin.Dto;
 using Nadmin.Model;
 
 namespace Nadmin.Controllers
 {
+    [AllowAnonymous]
     [Route("[controller]")]
     public class DataBaseController : BaseController
     {
