@@ -2,6 +2,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { _HttpClient, ModalHelper } from '@delon/theme';
 import { STColumn, STComponent, STColumnTag, STReq, STRes } from '@delon/abc';
 import { SFSchema } from '@delon/form';
+import { SysUserUserEditComponent } from './user-edit/user-edit.component';
+
+const MODAL_COMPONENT_NAME = '用户';
 
 const STATUS_TAG: STColumnTag = {
   0: { text: '正常', color: 'green' },
@@ -16,23 +19,23 @@ export class SysUserComponent implements OnInit {
   url = `api/user`;
   req: STReq = {
     reName: {
-      pi: "pageIndex",
-      ps: "pageSize",
-    }
+      pi: 'pageIndex',
+      ps: 'pageSize',
+    },
   };
   res: STRes = {
     reName: {
-      list: "result",
-      total: "totalCount",
-    }
+      list: 'result',
+      total: 'totalCount',
+    },
   };
   searchSchema: SFSchema = {
     properties: {
       keyword: {
         type: 'string',
-        title: '用户名'
-      }
-    }
+        title: '用户名',
+      },
+    },
   };
   @ViewChild('st') st: STComponent;
   columns: STColumn[] = [
@@ -47,19 +50,30 @@ export class SysUserComponent implements OnInit {
       title: '',
       buttons: [
         // { text: '查看', click: (item: any) => `/form/${item.id}` },
-        // { text: '编辑', type: 'static', component: FormEditComponent, click: 'reload' },
-      ]
-    }
+        {
+          text: '编辑',
+          type: 'static',
+          component: SysUserUserEditComponent,
+          paramName: 'record', // Modal中当前行的参数名
+          params: (r: any) => {
+            return { title: `编辑${MODAL_COMPONENT_NAME}` };
+          },
+          click: 'reload',
+        },
+      ],
+    },
   ];
 
-  constructor(private http: _HttpClient, private modal: ModalHelper) { }
+  constructor(private http: _HttpClient, private modal: ModalHelper) {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   add() {
-    // this.modal
-    //   .createStatic(FormEditComponent, { i: { id: 0 } })
-    //   .subscribe(() => this.st.reload());
+    this.modal
+      .createStatic(SysUserUserEditComponent, {
+        item: { id: 0 },
+        title: `新建${MODAL_COMPONENT_NAME}`,
+      })
+      .subscribe(() => this.st.reload());
   }
-
 }

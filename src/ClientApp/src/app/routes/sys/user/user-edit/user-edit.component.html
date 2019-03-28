@@ -1,0 +1,43 @@
+<div class="modal-header">
+  <div class="modal-title">{{ title }}</div>
+</div>
+<nz-spin *ngIf="!item" class="modal-spin"></nz-spin>
+
+<form *ngIf="item" nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
+  <div se-container gutter="32">
+    <se label="用户名" error="请输入用户名!" required>
+      <!-- FIXME 改多语言-->
+      <input formControlName="userName" nz-input>
+    </se>
+    <se label="邮箱">
+      <!-- FIXME 改多语言-->
+      <input formControlName="email" nz-input>
+      <nz-form-explain *ngIf="validateForm.get('email')?.dirty && validateForm.get('email')?.errors">
+        <ng-container *ngIf="validateForm.get('email')?.hasError('email')">
+          邮箱格式不正确！
+        </ng-container>
+        <!-- <ng-container *ngIf="validateForm.get('email')?.hasError('required')">
+          请输入邮箱！
+        </ng-container> -->
+      </nz-form-explain>
+    </se>
+    <se label="手机号码">
+      <!-- FIXME 改多语言-->
+      <input formControlName="phoneNumber" nz-input>
+    </se>
+    <se label="状态">
+      <!-- FIXME 改多语言-->
+      <nz-select formControlName="status">
+        <nz-option [nzValue]="0" nzLabel="正常"></nz-option>
+        <nz-option [nzValue]="1" nzLabel="冻结"></nz-option>
+      </nz-select>
+    </se>
+    <se label="备注" col="1">
+      <textarea formControlName="remark" nz-input rows="2"></textarea>
+    </se>
+  </div>
+  <div class="modal-footer">
+    <button nz-button type="button" (click)="close()">关闭</button>
+    <button nz-button type="submit" nzType="primary" [nzLoading]="http.loading">保存</button>
+  </div>
+</form>

@@ -21,14 +21,14 @@ namespace Nadmin.Controllers
                         new MenuDto
                         {
                             Text = "用户管理",
-                            Icon = "anticon anticon-dashboard",
+                            Icon = "anticon anticon-user",
                             Link = "/sys/user"
                         },
                         new MenuDto
                         {
                             Text = "角色管理",
-                            Icon = "anticon anticon-dashboard",
-                            Link = "aaaa"
+                            Icon = "anticon anticon-team",
+                            Link = "/sys/role"
                         },
                     }
                 }

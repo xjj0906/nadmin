@@ -19,9 +19,35 @@ namespace Nadmin.Controllers
             UserService = userService;
         }
 
+
+        [HttpGet("{id}")]
+        public IActionResult Get(string id)
+        {
+            var user = UserService.GetById(id).Result;
+
+            if (user == null)
+                return Ok(new ResultDto(1, $"用户Id: {id} 不存在"));
+
+            var dto = new UserQueryDto
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Avatar = user.Avatar,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Status = user.Status,
+                Remark = user.Remark,
+                CreateTime = user.CreateTime,
+            };
+
+            return Ok(new ObjectResultDto<UserQueryDto>(dto));
+        }
+
         [HttpGet]
         public IActionResult Get(string keyword = "", int pageIndex = 1, int pageSize = 10)
         {
+            keyword = keyword ?? "";
+
             var pageModel = new PageModel
             {
                 PageIndex = pageIndex,
@@ -37,6 +63,7 @@ namespace Nadmin.Controllers
             {
                 dtoList.Add(new UserQueryDto
                 {
+                    Id = user.Id,
                     UserName = user.UserName,
                     Avatar = user.Avatar,
                     Email = user.Email,
@@ -77,6 +104,7 @@ namespace Nadmin.Controllers
             if (user == null)
                 return Ok(new ResultDto(2, "用户不存在"));
 
+            user.UserName = userDto.UserName;
             user.Email = userDto.Email;
             user.PhoneNumber = userDto.PhoneNumber;
             user.Remark = userDto.Remark;
