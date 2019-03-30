@@ -55,7 +55,14 @@ export class DefaultInterceptor implements HttpInterceptor {
   private checkStatus(ev: HttpResponseBase) {
     if (ev.status >= 200 && ev.status < 300) return;
     if (ev.status === 401) return;
-    const errortext = CODEMESSAGE[ev.status] || ev.statusText;
+
+    // 错误 JSON 输出
+    let errJsonStr: string;
+    if (ev instanceof HttpErrorResponse) {
+      errJsonStr = JSON.stringify(<HttpErrorResponse>ev.error);
+    }
+
+    const errortext = errJsonStr || CODEMESSAGE[ev.status] || ev.statusText;
     this.injector
       .get(NzNotificationService)
       .error(`请求错误 ${ev.status}: ${ev.url}`, errortext);
@@ -97,7 +104,7 @@ export class DefaultInterceptor implements HttpInterceptor {
         break;
       case 403:
       case 404:
-      case 500:
+      // case 500:
         this.goTo(`/exception/${ev.status}`);
         break;
       default:

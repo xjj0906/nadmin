@@ -4,11 +4,11 @@ import { _HttpClient } from '@delon/theme';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-sys-user-edit',
+  selector: 'app-sys-role-edit',
   templateUrl: './edit.component.html',
 })
-export class SysUserEditComponent implements OnInit {
-  url = `api/user`;
+export class SysRoleEditComponent implements OnInit {
+  url = `api/role`;
   title: string; // Modal标题
   record: any = {}; // 父窗体传进来的记录
   item: any; // 新增：构造的 id = 0 空记录，编辑：服务器请求回来的记录，相对于 FormGroup 中的数据，此为未被修改的数据
@@ -21,10 +21,7 @@ export class SysUserEditComponent implements OnInit {
     public http: _HttpClient,
   ) {
     this.validateForm = this.fb.group({
-      userName: [null, [Validators.required]],
-      email: [null, [Validators.email]],
-      phoneNumber: [null],
-      status: [0],
+      name: [null, [Validators.required]],
       remark: [null],
     });
   }
@@ -53,16 +50,13 @@ export class SysUserEditComponent implements OnInit {
     if (this.record.id > 0)
       this.http.get(`${this.url}/${this.record.id}`).subscribe((res: any) => {
         this.item = res.result;
-        this.validateForm.controls.userName.setValue(this.item.userName);
-        this.validateForm.controls.email.setValue(this.item.email);
-        this.validateForm.controls.phoneNumber.setValue(this.item.phoneNumber);
-        this.validateForm.controls.status.setValue(this.item.status);
+        this.validateForm.controls.name.setValue(this.item.name);
         this.validateForm.controls.remark.setValue(this.item.remark);
       });
   }
 
   Insert(value: any) {
-    this.http.post(this.url, value, value).subscribe((res: any) => {
+    this.http.post(this.url, value).subscribe((res: any) => {
       if (res.status === 0) {
         this.msgSrv.success('保存成功');
         this.modal.close(true);
@@ -73,7 +67,7 @@ export class SysUserEditComponent implements OnInit {
   }
 
   Update(value: any) {
-    this.http.put(`${this.url}/${this.record.id}`).subscribe((res: any) => {
+    this.http.put(`${this.url}/${this.record.id}`, value).subscribe((res: any) => {
       if (res.status === 0) {
         this.msgSrv.success('保存成功');
         this.modal.close(true);

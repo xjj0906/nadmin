@@ -1,23 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { _HttpClient, ModalHelper } from '@delon/theme';
-import { STColumn, STComponent, STColumnTag, STReq, STRes } from '@delon/abc';
+import { STColumn, STComponent, STReq, STRes } from '@delon/abc';
 import { SFSchema } from '@delon/form';
-import { SysUserEditComponent } from './edit/edit.component';
+import { SysRoleEditComponent } from './edit/edit.component';
 import { NzMessageService } from 'ng-zorro-antd';
 
-const COMPONENT_NAME = '用户';
-
-const STATUS_TAG: STColumnTag = {
-  0: { text: '正常', color: 'green' },
-  1: { text: '冻结', color: 'red' },
-};
+const COMPONENT_NAME = '角色';
 
 @Component({
-  selector: 'app-sys-user',
-  templateUrl: './user.component.html',
+  selector: 'app-sys-role',
+  templateUrl: './role.component.html',
 })
-export class SysUserComponent implements OnInit {
-  url = `api/user`;
+export class SysRoleComponent implements OnInit {
+  url = `api/role`;
   req: STReq = {
     reName: {
       pi: 'pageIndex',
@@ -36,19 +31,15 @@ export class SysUserComponent implements OnInit {
         type: 'string',
         title: '',
         ui: {
-          placeholder: '名称或邮箱',
+          placeholder: '名称',
         },
       },
     },
   };
   @ViewChild('st') st: STComponent;
   columns: STColumn[] = [
-    { title: '用户名', index: 'userName' },
-    { title: '头像', index: 'avatar', type: 'img' },
-    { title: '邮箱', index: 'email' },
-    { title: '手机', index: 'phoneNumber' },
-    { title: '状态', index: 'status', type: 'tag', tag: STATUS_TAG },
-    { title: '备注', index: 'remark' },
+    { title: '名称', index: 'name' },
+    { title: '描述', index: 'remark' },
     { title: '创建时间', index: 'createTime', type: 'date' },
     {
       title: '',
@@ -58,7 +49,7 @@ export class SysUserComponent implements OnInit {
           icon: 'edit',
           text: '编辑',
           type: 'static',
-          component: SysUserEditComponent,
+          component: SysRoleEditComponent,
           paramName: 'record', // Modal中当前行的参数名
           params: (r: any) => {
             return { title: `编辑${COMPONENT_NAME}` };
@@ -97,7 +88,7 @@ export class SysUserComponent implements OnInit {
 
   add() {
     this.modal
-      .createStatic(SysUserEditComponent, {
+      .createStatic(SysRoleEditComponent, {
         item: { id: 0 },
         title: `新建${COMPONENT_NAME}`,
       })

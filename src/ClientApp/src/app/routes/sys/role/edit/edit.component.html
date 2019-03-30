@@ -1,0 +1,21 @@
+<div class="modal-header">
+    <div class="modal-title">{{ title }}</div>
+  </div>
+  <nz-spin *ngIf="!item" class="modal-spin"></nz-spin>
+  
+  <form *ngIf="item" nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
+    <div se-container gutter="32">
+      <se label="名称" error="请输入名称!" required>
+        <!-- FIXME 改多语言-->
+        <input formControlName="name" nz-input>
+      </se>
+      <se label="描述" col="1">
+        <textarea formControlName="remark" nz-input rows="2"></textarea>
+      </se>
+    </div>
+    <div class="modal-footer">
+      <button nz-button type="button" (click)="close()">关闭</button>
+      <button nz-button type="submit" nzType="primary" [nzLoading]="http.loading">保存</button>
+    </div>
+  </form>
+  

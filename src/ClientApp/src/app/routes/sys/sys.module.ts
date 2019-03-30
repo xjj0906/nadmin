@@ -3,11 +3,15 @@ import { SharedModule } from '@shared';
 import { SysRoutingModule } from './sys-routing.module';
 import { SysUserComponent } from './user/user.component';
 import { SysUserEditComponent } from './user/edit/edit.component';
+import { SysRoleComponent } from './role/role.component';
+import { SysRoleEditComponent } from './role/edit/edit.component';
 
 const COMPONENTS = [
-  SysUserComponent];
+  SysUserComponent,
+  SysRoleComponent];
 const COMPONENTS_NOROUNT = [
-  SysUserEditComponent];
+  SysUserEditComponent,
+  SysRoleEditComponent];
 
 @NgModule({
   imports: [
