@@ -2,9 +2,10 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { _HttpClient, ModalHelper } from '@delon/theme';
 import { STColumn, STComponent, STColumnTag, STReq, STRes } from '@delon/abc';
 import { SFSchema } from '@delon/form';
-import { SysUserUserEditComponent } from './user-edit/user-edit.component';
+import { SysUserEditComponent } from './edit/edit.component';
+import { NzMessageService } from 'ng-zorro-antd';
 
-const MODAL_COMPONENT_NAME = '用户';
+const COMPONENT_NAME = '用户';
 
 const STATUS_TAG: STColumnTag = {
   0: { text: '正常', color: 'green' },
@@ -51,28 +52,51 @@ export class SysUserComponent implements OnInit {
       buttons: [
         // { text: '查看', click: (item: any) => `/form/${item.id}` },
         {
+          icon: 'edit',
           text: '编辑',
           type: 'static',
-          component: SysUserUserEditComponent,
+          component: SysUserEditComponent,
           paramName: 'record', // Modal中当前行的参数名
           params: (r: any) => {
-            return { title: `编辑${MODAL_COMPONENT_NAME}` };
+            return { title: `编辑${COMPONENT_NAME}` };
           },
           click: 'reload',
+        },
+        {
+          icon: 'delete',
+          text: '删除',
+          type: 'del',
+          click: (record, modal, comp) => {
+            this.http.delete(`api/user/${record.id}`).subscribe((res: any) => {
+              if (res.status !== 0) {
+                this.message.warning(res.msg);
+              } else {
+                comp.removeRow(record);
+                this.message.success(
+                  `成功删除${COMPONENT_NAME}【${record.userName}】`,
+                );
+              }
+            });
+          },
+          iif: (item: any) => item.id % 2 === 0,
         },
       ],
     },
   ];
 
-  constructor(private http: _HttpClient, private modal: ModalHelper) {}
+  constructor(
+    private http: _HttpClient,
+    private modal: ModalHelper,
+    private message: NzMessageService,
+  ) {}
 
   ngOnInit() {}
 
   add() {
     this.modal
-      .createStatic(SysUserUserEditComponent, {
+      .createStatic(SysUserEditComponent, {
         item: { id: 0 },
-        title: `新建${MODAL_COMPONENT_NAME}`,
+        title: `新建${COMPONENT_NAME}`,
       })
       .subscribe(() => this.st.reload());
   }

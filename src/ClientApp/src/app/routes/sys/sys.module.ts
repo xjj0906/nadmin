@@ -2,12 +2,12 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from '@shared';
 import { SysRoutingModule } from './sys-routing.module';
 import { SysUserComponent } from './user/user.component';
-import { SysUserUserEditComponent } from './user/user-edit/user-edit.component';
+import { SysUserEditComponent } from './user/edit/edit.component';
 
 const COMPONENTS = [
   SysUserComponent];
 const COMPONENTS_NOROUNT = [
-  SysUserUserEditComponent];
+  SysUserEditComponent];
 
 @NgModule({
   imports: [

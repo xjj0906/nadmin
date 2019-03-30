@@ -30,24 +30,9 @@ namespace Nadmin.Model.Models
         public string Remark { get; set; }
 
         /// <summary>
-        /// 创建ID
-        /// </summary>
-        public string CreateUserId { get; set; }
-
-        /// <summary>
         /// 创建时间
         /// </summary>
         public DateTime CreateTime { get; set; }
-
-        /// <summary>
-        /// 创建ID
-        /// </summary>
-        public string ModifyUserId { get; set; }
-
-        /// <summary>
-        /// 创建时间
-        /// </summary>
-        public DateTime ModifyTime { get; set; }
 
         /// <summary>
         /// 所属此角色的用户

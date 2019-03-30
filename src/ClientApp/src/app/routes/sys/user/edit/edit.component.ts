@@ -4,10 +4,10 @@ import { _HttpClient } from '@delon/theme';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-sys-user-user-edit',
-  templateUrl: './user-edit.component.html',
+  selector: 'app-sys-user-edit',
+  templateUrl: './edit.component.html',
 })
-export class SysUserUserEditComponent implements OnInit {
+export class SysUserEditComponent implements OnInit {
   title: string; // Modal标题
   record: any = {}; // 父窗体传进来的记录
   item: any; // 新增：构造的 id = 0 空记录，编辑：服务器请求回来的记录，相对于 FormGroup 中的数据，此为未被修改的数据
@@ -62,17 +62,25 @@ export class SysUserUserEditComponent implements OnInit {
 
   Insert(value: any) {
     //更新
-    this.http.put(`api/user/${this.record.id}`, value).subscribe(res => {
-      this.msgSrv.success('保存成功');
-      this.modal.close(true);
+    this.http.put(`api/user/${this.record.id}`, value).subscribe((res: any) => {
+      if (res.status === 0) {
+        this.msgSrv.success('保存成功');
+        this.modal.close(true);
+      } else {
+        this.msg.warning(res.msg);
+      }
     });
   }
 
   Update(value: any) {
     //保存
-    this.http.post(`api/user`, value).subscribe(res => {
-      this.msgSrv.success('保存成功');
-      this.modal.close(true);
+    this.http.post(`api/user`, value).subscribe((res: any) => {
+      if (res.status === 0) {
+        this.msgSrv.success('保存成功');
+        this.modal.close(true);
+      } else {
+        this.msg.warning(res.msg);
+      }
     });
   }
 

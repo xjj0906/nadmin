@@ -19,7 +19,6 @@ namespace Nadmin.Controllers
             UserService = userService;
         }
 
-
         [HttpGet("{id}")]
         public IActionResult Get(string id)
         {
@@ -59,18 +58,18 @@ namespace Nadmin.Controllers
 
             var dtoList = new List<UserQueryDto>();
 
-            foreach (var user in list)
+            foreach (var item in list)
             {
                 dtoList.Add(new UserQueryDto
                 {
-                    Id = user.Id,
-                    UserName = user.UserName,
-                    Avatar = user.Avatar,
-                    Email = user.Email,
-                    PhoneNumber = user.PhoneNumber,
-                    Status = user.Status,
-                    Remark = user.Remark,
-                    CreateTime = user.CreateTime,
+                    Id = item.Id,
+                    UserName = item.UserName,
+                    Avatar = item.Avatar,
+                    Email = item.Email,
+                    PhoneNumber = item.PhoneNumber,
+                    Status = item.Status,
+                    Remark = item.Remark,
+                    CreateTime = item.CreateTime,
                 });
             }
 
@@ -88,11 +87,13 @@ namespace Nadmin.Controllers
 
             var encryptedPassword = UserService.EncryptPassword(InitPassword);
 
-            User user = new User(userDto.UserName, encryptedPassword);
-            user.Email = userDto.Email;
-            user.PhoneNumber = userDto.PhoneNumber;
-            user.Remark = userDto.Remark;
-            var effectCount = UserService.Insert(user).Result;
+            User user = new User(userDto.UserName, encryptedPassword)
+            {
+                Email = userDto.Email,
+                PhoneNumber = userDto.PhoneNumber,
+                Remark = userDto.Remark
+            };
+            UserService.Insert(user).Wait();
 
             return Ok(new ResultDto());
         }
@@ -109,7 +110,7 @@ namespace Nadmin.Controllers
             user.PhoneNumber = userDto.PhoneNumber;
             user.Remark = userDto.Remark;
             user.Status = userDto.Status;
-            var isUpdated = UserService.Update(user).Result;
+            UserService.Update(user).Wait();
 
             return Ok(new ResultDto());
         }
@@ -120,7 +121,11 @@ namespace Nadmin.Controllers
             var user = UserService.GetById(id).Result;
             if (user != null)
             {
-                var isDeleted = UserService.Delete(user).Result;
+                if (user.UserName.ToLower() == "admin")
+                {
+                    return Ok(new ResultDto(3, "用户 admin 不允许删除"));
+                }
+                UserService.Delete(user).Wait();
                 return Ok(new ResultDto());
             }
 
