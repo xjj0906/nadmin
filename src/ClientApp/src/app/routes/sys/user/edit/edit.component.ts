@@ -62,7 +62,7 @@ export class SysUserEditComponent implements OnInit {
   }
 
   Insert(value: any) {
-    this.http.post(this.url, value, value).subscribe((res: any) => {
+    this.http.post(this.url, value).subscribe((res: any) => {
       if (res.status === 0) {
         this.msgSrv.success('保存成功');
         this.modal.close(true);
@@ -73,7 +73,7 @@ export class SysUserEditComponent implements OnInit {
   }
 
   Update(value: any) {
-    this.http.put(`${this.url}/${this.record.id}`).subscribe((res: any) => {
+    this.http.put(`${this.url}/${this.record.id}`, value).subscribe((res: any) => {
       if (res.status === 0) {
         this.msgSrv.success('保存成功');
         this.modal.close(true);
