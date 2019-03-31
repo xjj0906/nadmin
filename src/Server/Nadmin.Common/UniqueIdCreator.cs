@@ -4,10 +4,11 @@ namespace Nadmin.Common
 {
     public static class UniqueIdCreator
     {
+        private static readonly IdWorker Worker = new IdWorker(1, 1);
+
         public static string Get()
         {
-            var worker = new IdWorker(1, 1);
-            long id = worker.NextId();
+            long id = Worker.NextId();
             return id.ToString();
         }
     }
