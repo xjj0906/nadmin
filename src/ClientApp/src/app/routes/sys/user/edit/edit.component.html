@@ -9,17 +9,9 @@
       <!-- FIXME 改多语言-->
       <input formControlName="userName" nz-input>
     </se>
-    <se label="邮箱">
+    <se label="邮箱" error="邮箱格式不正确！">
       <!-- FIXME 改多语言-->
       <input formControlName="email" nz-input>
-      <nz-form-explain *ngIf="validateForm.get('email')?.dirty && validateForm.get('email')?.errors">
-        <ng-container *ngIf="validateForm.get('email')?.hasError('email')">
-          邮箱格式不正确！
-        </ng-container>
-        <!-- <ng-container *ngIf="validateForm.get('email')?.hasError('required')">
-          请输入邮箱！
-        </ng-container> -->
-      </nz-form-explain>
     </se>
     <se label="手机号码">
       <!-- FIXME 改多语言-->
